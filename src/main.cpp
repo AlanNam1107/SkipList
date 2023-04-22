@@ -9,7 +9,11 @@
 #include <string>
 
 int main(int, char **) {
-  SkipList<int, std::string> sl(5);
+
+  SkipList<int, std::string> sl(32);
+
+  sl.load();
+
   sl.insert(1, "a");
   sl.insert(3, "c");
   sl.insert(4, "d");
@@ -29,6 +33,8 @@ int main(int, char **) {
   std::cout << "skipList size:" << sl.get_size() << std::endl;
 
   sl.print();
+
+  sl.save();
 
   return 0;
 }

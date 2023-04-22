@@ -5,17 +5,16 @@
 #include <mutex>
 #include <string>
 //数据存储文件夹
-#define DATA_DIR "store/data"
+#define DATA_DIR "../store/data"
 
 //实现跳表的类模板
 template <typename K, typename V> class SkipList {
 private:
-  Node<K, V> *head;       //头节点
-  const int max_level;    //跳表的最大层数
-  int level;              //跳表的当前层数
-  int size;               //跳表的大小
-  std::mutex mtx;         //临界区锁
-  std::fstream data_file; //数据文件
+  Node<K, V> *head;    //头节点
+  const int max_level; //跳表的最大层数
+  int level;           //跳表的当前层数
+  int size;            //跳表的大小
+  std::mutex mtx;      //临界区锁
 
 public:
   SkipList(int max_level);
@@ -47,8 +46,7 @@ public:
 
 //实现跳表的类模板的成员函数
 template <typename K, typename V>
-SkipList<K, V>::SkipList(int max_level)
-    : max_level(max_level), data_file(DATA_DIR, std::ios::in | std::ios::out) {
+SkipList<K, V>::SkipList(int max_level) : max_level(max_level) {
   this->size = 0;
   this->level = 0;
 
@@ -193,22 +191,26 @@ template <typename K, typename V> void SkipList<K, V>::print() {
 
 template <typename K, typename V> void SkipList<K, V>::save() {
   // std::lock_guard<std::mutex> lock(mtx);
+
+  std::ofstream data_file(DATA_DIR, std::ios::out | std::ios::trunc);
   Node<K, V> *x = this->head->forward[0];
 
   // 将跳表的数据写入文件
   while (x != NULL) {
-    this->data_file << x->get_key() << " " << x->get_value() << std::endl;
+    data_file << x->get_key() << " " << x->get_value() << std::endl;
     x = x->forward[0];
   }
 }
 
 template <typename K, typename V> void SkipList<K, V>::load() {
   // std::lock_guard<std::mutex> lock(mtx);
+
+  std::ifstream data_file(DATA_DIR, std::ios::in);
   K key;
   V value;
 
   // 从文件中读取跳表的数据
-  while (this->data_file >> key >> value) {
+  while (data_file >> key >> value) {
     this->insert(key, value);
   }
 }
